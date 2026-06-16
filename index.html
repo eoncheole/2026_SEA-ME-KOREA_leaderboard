@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026 SEA:ME Hackathon</title>
+    <link rel="stylesheet" href="static/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">2026 SEA:ME Hackathon</h1>
+        </header>
+
+        <div class="main-content">
+            <aside class="sidebar">
+                <div class="card integrated-card">
+                    <h2 class="card-title compact">Stopwatch</h2>
+                    <iframe 
+                        id="stopwatch-iframe" 
+                        class="stopwatch-frame"
+                        src="https://kclock.kr/embed/stopwatch/#dF=1&dpD=1&dM=0&cId=2dF=1&dM=0&cId=2"allowfullscreen="true"
+                        allowfullscreen="true"
+                    ></iframe>
+                    
+                    <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color);">
+                        <h3 class="card-title compact">Add Entry</h3>
+                        <form id="add-entry-form">
+                            <div class="form-group">
+                                <label class="form-label" for="name-input">Team Name</label>
+                                <input 
+                                    type="text" 
+                                    id="name-input" 
+                                    class="form-input" 
+                                    placeholder="Enter team name" 
+                                    required
+                                >
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="time1-input">First Attempt</label>
+                                    <input 
+                                        type="text" 
+                                        id="time1-input" 
+                                        class="form-input" 
+                                        placeholder="e.g., 01:23.4 (optional)" 
+                                    >
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="time2-input">Second Attempt</label>
+                                    <input 
+                                        type="text" 
+                                        id="time2-input" 
+                                        class="form-input" 
+                                        placeholder="e.g., 01:23.4 (optional)"
+                                    >
+                                </div>
+                            </div>
+                            <button type="submit" id="submit-btn" class="btn btn-primary btn-block">
+                                Add Entry
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </aside>
+
+            <main class="leaderboard-section">
+                <div class="leaderboard-columns">
+                    <div class="leaderboard-column">
+                        <table class="leaderboard-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px; text-align: center;">Rank</th>
+                                    <th style="width: 200px;">Team Name</th>
+                                    <th style="width: 90px; text-align: center;">1st Record</th>
+                                    <th style="width: 90px; text-align: center;">2nd Record</th>
+                                    <th style="width: 100px; text-align: center;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderboard-body-1">
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="leaderboard-column">
+                        <table class="leaderboard-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px; text-align: center;">Rank</th>
+                                    <th style="width: 200px;">Team Name</th>
+                                    <th style="width: 90px; text-align: center;">1st Record</th>
+                                    <th style="width: 90px; text-align: center;">2nd Record</th>
+                                    <th style="width: 100px; text-align: center;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderboard-body-2">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="pagination-container" id="pagination-container"></div>
+            </main>
+        </div>
+    </div>
+
+    <script src="static/js/leaderboard-static.js"></script>
+</body>
+</html>

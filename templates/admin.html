@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026 SEA:ME Hackathon - Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        html {
+            background: #0a0a0a;
+        }
+        body {
+            background: #0a0a0a !important;
+            color: #e0e0e0 !important;
+        }
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .admin-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .admin-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+        .admin-table {
+            width: 100%;
+            background: var(--card-background);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+        .admin-table th, .admin-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .admin-table th {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 700;
+        }
+        .admin-table tr:hover {
+            background: rgba(0, 168, 150, 0.15);
+        }
+        .admin-form {
+            background: var(--card-background);
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 2rem;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            padding: 0.5rem 1rem;
+            background: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: var(--radius);
+            font-weight: 600;
+        }
+        .back-link:hover {
+            background: var(--primary-hover);
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <a href="/" class="back-link">← 메인페이지로 이동하자..</a>
+        
+        <div class="admin-header">
+            <h1 class="title">짱 권한 페이지</h1>
+            <p class="subtitle"></p>
+        </div>
+
+        <div class="admin-controls">
+            <button id="show-all-btn" class="btn btn-primary">팀 이름 전체보기</button>
+            <button id="hide-all-btn" class="btn btn-secondary">팀 이름 전체 숨기기</button>
+        </div>
+
+        <div class="admin-form">
+            <h2>새로 추가 페이지</h2>
+            <form id="admin-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="team-name">Team Name</label>
+                        <input type="text" id="team-name" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="first-time">First Attempt</label>
+                        <input type="text" id="first-time" class="form-input" placeholder="e.g., 01:23.4">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="second-time">Second Attempt</label>
+                        <input type="text" id="second-time" class="form-input" placeholder="e.g., 01:23.4">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">기록 추가</button>
+            </form>
+        </div>
+
+        <div class="admin-table">
+            <table style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Team Name</th>
+                        <th>First Attempt</th>
+                        <th>Second Attempt</th>
+                        <th>Best Time</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-tbody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        class AdminManager {
+            constructor() {
+                this.rows = [];
+                this.editIndex = null;
+                this.initElements();
+                this.bindEvents();
+                this.fetchLeaderboard();
+            }
+
+            initElements() {
+                this.form = document.getElementById('admin-form');
+                this.teamNameInput = document.getElementById('team-name');
+                this.firstTimeInput = document.getElementById('first-time');
+                this.secondTimeInput = document.getElementById('second-time');
+                this.tbody = document.getElementById('admin-tbody');
+                this.showAllBtn = document.getElementById('show-all-btn');
+                this.hideAllBtn = document.getElementById('hide-all-btn');
+            }
+
+            bindEvents() {
+                this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+                this.tbody.addEventListener('click', (e) => this.handleTableClick(e));
+                this.showAllBtn.addEventListener('click', () => this.toggleMainPageNames(true));
+                this.hideAllBtn.addEventListener('click', () => this.toggleMainPageNames(false));
+            }
+
+            async fetchLeaderboard() {
+                try {
+                    const response = await fetch('/api/leaderboard');
+                    const data = await response.json();
+                    this.rows = Array.isArray(data) ? data : [];
+                    this.renderTable();
+                } catch (error) {
+                    console.error('Failed to fetch leaderboard:', error);
+                }
+            }
+
+            async syncToServer() {
+                try {
+                    await fetch('/api/leaderboard', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ leaderboard: this.rows })
+                    });
+                } catch (error) {
+                    console.error('Failed to sync leaderboard:', error);
+                }
+            }
+
+            async toggleMainPageNames(show) {
+                try {
+                    await fetch('/api/toggle-names', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ show: show })
+                    });
+                    alert(show ? 'Team names are now visible on main page' : 'Team names are now hidden on main page');
+                } catch (error) {
+                    console.error('Failed to toggle names:', error);
+                }
+            }
+
+            timeStrToMs(str) {
+                if (!str || str.includes('기록 없음')) return Number.MAX_SAFE_INTEGER;
+                
+                let match = str.match(/(\d{1,2}):(\d{1,2})\.(\d{1})$/);
+                if (match) {
+                    const [, min, sec, tenths] = match;
+                    return parseInt(min) * 60000 + parseInt(sec) * 1000 + parseInt(tenths) * 100;
+                }
+                
+                match = str.match(/(\d{1,2}):(\d{1,2})\.(\d{3})$/);
+                if (match) {
+                    const [, min, sec, ms] = match;
+                    return parseInt(min) * 60000 + parseInt(sec) * 1000 + parseInt(ms);
+                }
+                
+                return Number.MAX_SAFE_INTEGER;
+            }
+
+            formatTime(timeInput) {
+                const patterns = {
+                    standard: /^(\d{1,2}):(\d{1,2})\.(\d{1})$/,
+                    dotFormat: /^(\d{1,2})\.(\d{1,2})\.(\d{1})$/
+                };
+
+                if (patterns.standard.test(timeInput)) {
+                    const [min, second] = timeInput.split(':');
+                    const [sec, tenths] = second.split('.');
+                    return `${min.padStart(2, '0')}:${sec.padStart(2, '0')}.${tenths}`;
+                }
+
+                if (patterns.dotFormat.test(timeInput)) {
+                    const [min, sec, tenths] = timeInput.split('.');
+                    return `${min.padStart(2, '0')}:${sec.padStart(2, '0')}.${tenths}`;
+                }
+
+                return null;
+            }
+
+            handleSubmit(e) {
+                e.preventDefault();
+                
+                const name = this.teamNameInput.value.trim();
+                let time1 = this.firstTimeInput.value.trim();
+                let time2 = this.secondTimeInput.value.trim();
+                
+                if (!name) return;
+
+                if (time1) {
+                    const formatted = this.formatTime(time1);
+                    if (!formatted) {
+                        alert('Invalid time format for first attempt');
+                        return;
+                    }
+                    time1 = formatted;
+                }
+
+                if (time2) {
+                    const formatted = this.formatTime(time2);
+                    if (!formatted) {
+                        alert('Invalid time format for second attempt');
+                        return;
+                    }
+                    time2 = formatted;
+                }
+
+                time1 = time1 ? '첫번째 시도: ' + time1 : '첫번째 시도: 기록 없음';
+                time2 = time2 ? '두번째 시도: ' + time2 : '두번째 시도: 기록 없음';
+
+                if (this.editIndex !== null) {
+                    this.rows[this.editIndex] = { name, time1, time2 };
+                    this.editIndex = null;
+                } else {
+                    this.rows.push({ name, time1, time2 });
+                }
+
+                this.sortRows();
+                this.renderTable();
+                this.syncToServer();
+                this.form.reset();
+            }
+
+            sortRows() {
+                this.rows.sort((a, b) => {
+                    const aBest = Math.min(this.timeStrToMs(a.time1), this.timeStrToMs(a.time2));
+                    const bBest = Math.min(this.timeStrToMs(b.time1), this.timeStrToMs(b.time2));
+                    
+                    if (aBest !== bBest) return aBest - bBest;
+                    return this.timeStrToMs(a.time2) - this.timeStrToMs(b.time2);
+                });
+            }
+
+            getBestTime(row) {
+                const t1ms = this.timeStrToMs(row.time1);
+                const t2ms = this.timeStrToMs(row.time2);
+                
+                if (t1ms === Number.MAX_SAFE_INTEGER && t2ms === Number.MAX_SAFE_INTEGER) {
+                    return '기록 없음';
+                }
+                
+                if (t1ms <= t2ms) {
+                    return row.time1.replace('첫번째 시도: ', '');
+                } else {
+                    return row.time2.replace('두번째 시도: ', '');
+                }
+            }
+
+            renderTable() {
+                const tableRows = this.rows.map((row, index) => {
+                    const time1Display = row.time1.replace('첫번째 시도: ', '');
+                    const time2Display = row.time2.replace('두번째 시도: ', '');
+                    const bestTime = this.getBestTime(row);
+                    
+                    return `
+                        <tr data-index="${index}">
+                            <td>${index + 1}</td>
+                            <td>${row.name}</td>
+                            <td>${time1Display}</td>
+                            <td>${time2Display}</td>
+                            <td><strong>${bestTime}</strong></td>
+                            <td>
+                                <button class="btn btn-secondary btn-sm edit-btn">Edit</button>
+                                <button class="btn btn-danger btn-sm delete-btn">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+
+                this.tbody.innerHTML = tableRows;
+            }
+
+            handleTableClick(e) {
+                const tr = e.target.closest('tr');
+                if (!tr) return;
+                
+                const index = parseInt(tr.getAttribute('data-index'));
+                
+                if (e.target.classList.contains('edit-btn')) {
+                    this.editIndex = index;
+                    const row = this.rows[index];
+                    this.teamNameInput.value = row.name;
+                    this.firstTimeInput.value = row.time1.replace('첫번째 시도: ', '').replace('기록 없음', '');
+                    this.secondTimeInput.value = row.time2.replace('두번째 시도: ', '').replace('기록 없음', '');
+                    this.teamNameInput.focus();
+                }
+                
+                if (e.target.classList.contains('delete-btn')) {
+                    if (confirm('Are you sure you want to delete this entry?')) {
+                        this.rows.splice(index, 1);
+                        this.renderTable();
+                        this.syncToServer();
+                    }
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new AdminManager();
+        });
+    </script>
+</body>
+</html>

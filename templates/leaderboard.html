@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026 SEA:ME Hackathon</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">2026 SEA:ME Hackathon</h1>
+        </header>
+
+        <div class="main-content">
+            <aside class="sidebar">
+                <div class="card integrated-card">
+                    <div class="timer-unit" id="timer-unit-3" data-duration="180">
+                        <h2 class="card-title compact">3 Min Timer</h2>
+                        <div class="timer-display" id="timer-display-3">03:00</div>
+                    </div>
+
+                    <div class="timer-unit" id="timer-unit-5" data-duration="300" style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color);">
+                        <h3 class="card-title compact">5 Min Timer</h3>
+                        <div class="timer-display" id="timer-display-5">05:00</div>
+                    </div>
+
+                    <div class="timer-controls" style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color);">
+                        <button type="button" id="timer-start-btn" class="btn btn-primary">시작</button>
+                        <button type="button" id="timer-reset-btn" class="btn btn-secondary">재설정</button>
+                    </div>
+
+                    <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color);">
+                        <div style="margin-bottom: 0.75rem;">
+                            <button type="button" id="show-names-btn" class="btn btn-secondary btn-block">
+                                Hold to Show Team Names
+                            </button>
+                        </div>
+                        <div>
+                            <button type="button" id="theme-toggle-btn" class="btn btn-secondary btn-block">
+                                <span id="theme-toggle-text">Switch to Light Theme</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <main class="leaderboard-section">
+                <div class="leaderboard-columns">
+                    <div class="leaderboard-column">
+                        <table class="leaderboard-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 15%; text-align: center;">Rank</th>
+                                    <th style="width: 37%;">Team Name</th>
+                                    <th style="width: 24%; text-align: center;">1st Record</th>
+                                    <th style="width: 24%; text-align: center;">2nd Record</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderboard-body-1">
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="leaderboard-column">
+                        <table class="leaderboard-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 15%; text-align: center;">Rank</th>
+                                    <th style="width: 37%;">Team Name</th>
+                                    <th style="width: 24%; text-align: center;">1st Record</th>
+                                    <th style="width: 24%; text-align: center;">2nd Record</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderboard-body-2">
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="leaderboard-column">
+                        <table class="leaderboard-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 15%; text-align: center;">Rank</th>
+                                    <th style="width: 37%;">Team Name</th>
+                                    <th style="width: 24%; text-align: center;">1st Record</th>
+                                    <th style="width: 24%; text-align: center;">2nd Record</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderboard-body-3">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        window.initialLeaderboard = {{ leaderboard | tojson | safe }};
+    </script>
+    <script src="{{ url_for('static', filename='js/leaderboard.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/timers.js') }}"></script>
+</body>
+</html>
