@@ -6,7 +6,7 @@
  *  - 대신 시작 시점에 종료 시각(endTime = 현재 + duration)을 한 번 고정하고,
  *    매 프레임마다 remaining = endTime - performance.now() 를 다시 계산해 표시한다.
  *  - 탭이 백그라운드로 가거나 렉이 걸려도 누적 오차가 생기지 않는다.
- *  - 3분/5분 타이머는 같은 기준 시각(now0)으로 endTime을 잡아 완벽히 동기화된다.
+ *  - 2분/5분 타이머는 같은 기준 시각(now0)으로 endTime을 잡아 완벽히 동기화된다.
  */
 
 class CountdownTimer {
