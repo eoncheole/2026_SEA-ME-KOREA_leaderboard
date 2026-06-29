@@ -113,7 +113,7 @@ body.light-theme::before {
 }
 
 .title {
-    font-size: clamp(2rem, 4vw, 2.8rem);
+    font-size: clamp(2.5rem, 5.5vw, 4rem);
     font-weight: 800;
     background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-mid) 50%, var(--gradient-end) 100%);
     -webkit-background-clip: text;
@@ -988,7 +988,7 @@ body.light-theme .pagination-btn {
     }
 
     .title {
-        font-size: clamp(2.25rem, 5vw, 2.8rem);
+        font-size: clamp(2.75rem, 6vw, 4rem);
     }
 
     .container {
@@ -1011,7 +1011,7 @@ body.light-theme .pagination-btn {
     }
     
     .title {
-        font-size: clamp(2rem, 6vw, 2.5rem);
+        font-size: clamp(2.5rem, 7vw, 3.25rem);
     }
     
     .form-row {
